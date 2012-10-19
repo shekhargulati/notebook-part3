@@ -12,4 +12,15 @@
 			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
 		</properties>
 	</persistence-unit>
+
+	<persistence-unit name="notebook-postgresql" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<class>com.openshift.notebook.core.domain.Profile</class>
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL82Dialect" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.connection.charSet" value="UTF-8" />
+		</properties>
+
+	</persistence-unit>
 </persistence>
