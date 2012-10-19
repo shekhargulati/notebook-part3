@@ -21,6 +21,8 @@ public class HsqlDbConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(datasource());
+		entityManagerFactoryBean.setPersistenceUnitName("notebook-hsql");
+		entityManagerFactoryBean.setPersistenceXmlLocation("classpath:META-INF/jpa-persistence.xml");
 		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
 		hibernateJpaVendorAdapter.setShowSql(true);
 		hibernateJpaVendorAdapter.setDatabase(Database.HSQL);
