@@ -24,51 +24,60 @@ public class ProfileController {
 	@Inject
 	private ProfileService profileService;
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json", produces = "application/json")
-	public Profile createFromJson(@RequestBody String json) {
-		Profile profile = Profile.fromJsonToProfile(json);
-		profile = profileService.createProfile(profile);
-		return profile;
-	}
+	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> createFromJson(@RequestBody String json) {
+        Profile profile = Profile.fromJsonToProfile(json);
+        profile = profileService.createProfile(profile);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(String.valueOf(profile.getId()),headers, HttpStatus.CREATED);
+    } 
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json", produces = "application/json")
-	@ResponseBody
-	public Profile showJson(@PathVariable("id") Long id) {
-		Profile profile = profileService.findProfile(id);
-		return profile;
-	}
-
-	@RequestMapping(headers = "Accept=application/json", produces = "application/json")
-	@ResponseBody
-	public List<Profile> listJson() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<Profile> profiles = profileService.findAllProfiles();
-		return profiles;
-	}
-
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json", produces = "application/json")
-	public Profile updateFromJson(@PathVariable("id") Long id,
-			@RequestBody String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		Profile profile = Profile.fromJsonToProfile(json);
-		profile.setId(id);
-		if (profileService.updateProfile(profile) == null) {
-			return null;
-		}
-		return profile;
-	}
-
+	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+		
+        Profile profile = profileService.findProfile(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (profile == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(profile.toJson(), headers,
+                HttpStatus.OK);
+    }
+	
+	@RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listJson() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<Profile> result = profileService.findAllProfiles();
+        return new ResponseEntity<String>(Profile.toJsonArray(result),
+                headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/{id}",method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> updateFromJson(@PathVariable("id") Long id,@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Profile profile = Profile.fromJsonToProfile(json);
+        profile.setId(id);
+        if (profileService.updateProfile(profile) == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(profile.toJson(),headers, HttpStatus.OK);
+    }
+	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-	public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
-		Profile profile = profileService.findProfile(id);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		if (profile == null) {
-			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-		}
-		profileService.deleteProfile(id);
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
+    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+        Profile profile = profileService.findProfile(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (profile == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        profileService.deleteProfile(id);
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
 }
