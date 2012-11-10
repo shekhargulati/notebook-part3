@@ -32,11 +32,12 @@ public class PostgresqlConfig {
 
 	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
-		String username = System.getenv("OPENSHIFT_DB_USERNAME");
-		String password = System.getenv("OPENSHIFT_DB_PASSWORD");
-		String host = System.getenv("OPENSHIFT_DB_HOST");
-		String port = System.getenv("OPENSHIFT_DB_PORT");
-		String url = "jdbc:postgresql://" + host + ":" + port + "/notebook";
+		String username = System.getenv("OPENSHIFT_POSTGRESQL_DB_USERNAME");
+		String password = System.getenv("OPENSHIFT_POSTGRESQL_DB_PASSWORD");
+		String host = System.getenv("OPENSHIFT_POSTGRESQL_DB_HOST");
+		String port = System.getenv("OPENSHIFT_POSTGRESQL_DB_PORT");
+        String databaseName = System.getenv("OPENSHIFT_APP_NAME");
+		String url = "jdbc:postgresql://" + host + ":" + port + "/"+databaseName;
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
 		dataSource.setUrl(url);
